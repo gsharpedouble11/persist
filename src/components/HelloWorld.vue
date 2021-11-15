@@ -1,61 +1,115 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa" target="_blank" rel="noopener">pwa</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <form>
+      <label for="firstName">First Name</label>
+      <input 
+        type="text" 
+        id="firstName"
+        @input="updateForm('firstName', $event.target.value)"
+        :value="form.firstName" />
+    
+      <label for="lastName">Last Name</label>
+      <input 
+        type="text" 
+        id="lastName" 
+        @input="updateForm('lastName', $event.target.value)"
+        :value="form.lastName" />
+    
+      <label for="email">Email</label>
+      <input 
+        type="email" 
+        id="email" 
+        @input="updateForm('email', $event.target.value)"
+        :value="form.email" />
+    
+      <label for="framework">Favorite Framework</label>
+      <select id="framework" @change="updateForm('framework', $event.target.value)">
+        <option value="vue" :selected="form.framework === 'vue'">Vue</option>
+        <option value="stillvue" :selected="form.framework === 'stillvue'">Vue!</option>
+        <option value="vuevuevue" :selected="form.framework === 'vuevuevue'">Vue :D</option>
+        <option value="okfine" :selected="form.framework === 'okfine'">Other</option>
+      </select>
+    
+      <label for="extras">Describe why you love Vue</label>
+      <textarea 
+        id="extras" 
+        @input="updateForm('extras', $event.target.value)"
+        :value="form.extras"
+        rows="5"></textarea>
+    
+      <label>
+        <input 
+          type="checkbox" 
+          :checked="form.spam"
+          @change="updateForm('spam', $event.target.checked)" />
+        I want all the spams
+      </label>
+    
+      <button type="submit">Submit</button>
+    </form>
   </div>
 </template>
 
 <script>
 export default {
   name: 'HelloWorld',
-  props: {
-    msg: String
+  data () {
+    return {
+      form: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        framework: 'vue',
+        extras: '',
+        spam: false
+      }
+    }
+  },
+  methods: {
+    openStorage () {
+      return JSON.parse(localStorage.getItem('form'))
+    },
+    saveStorage (form) {
+      localStorage.setItem('form', JSON.stringify(form))
+    },
+    updateForm (input, value) {
+      this.form[input] = value
+
+      //extract stored form
+      let storedForm = this.openStorage() 
+      // if non exists, default to empty object
+      if (!storedForm) storedForm = {}
+
+      //store new value
+      storedForm[input] = value
+      //save changes into localStorage
+      this.saveStorage(storedForm)
+    }
+  },
+  created () {
+    const storedForm = this.openStorage()
+    if (storedForm) {
+      this.form = 
+        ...this.form,
+        ...storedForm
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+  .hello {
+    display: flex;
+    justify-content: center;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    align-items: center;
+  }
+  label, input {
+    margin: .5rem auto;
+  }
 </style>
