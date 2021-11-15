@@ -89,9 +89,10 @@ export default {
   created () {
     const storedForm = this.openStorage()
     if (storedForm) {
-      this.form = 
+      this.form = {
         ...this.form,
         ...storedForm
+      }
     }
   }
 }
